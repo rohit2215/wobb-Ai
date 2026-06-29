@@ -39,7 +39,7 @@ export function Layout({ children, title }: LayoutProps) {
               className="w-9 h-9 object-contain rounded-full shadow-sm group-hover:scale-105 transition-transform duration-200"
             />
             <span className="font-extrabold text-xl tracking-tight text-slate-900">
-              Wobb
+              Wobb<span className="text-indigo-600">.ai</span>
             </span>
           </Link>
 
