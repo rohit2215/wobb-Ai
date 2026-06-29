@@ -1,8 +1,10 @@
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Platform, UserProfileSummary } from "@/types";
 import { VerifiedBadge } from "@/components/common/VerifiedBadge";
 import { formatFollowers } from "@/utils/formatters";
 import { useInfluencerStore } from "@/store/useInfluencerStore";
+import { animateFlyToCart } from "@/utils/flyEffect";
 
 interface ProfileCardProps {
   profile: UserProfileSummary;
@@ -19,6 +21,7 @@ export function ProfileCard({
 }: ProfileCardProps) {
   const navigate = useNavigate();
   const { selectedProfiles, addProfile, removeProfile } = useInfluencerStore();
+  const imgRef = useRef<HTMLImageElement>(null);
 
   const isSelected = selectedProfiles.some((p) => p.user_id === profile.user_id);
 
@@ -32,6 +35,10 @@ export function ProfileCard({
     if (isSelected) {
       removeProfile(profile.user_id);
     } else {
+      // Trigger cart fly animation
+      if (imgRef.current) {
+        animateFlyToCart(imgRef.current, profile.picture);
+      }
       addProfile({
         ...profile,
         type: platform,
@@ -76,6 +83,7 @@ export function ProfileCard({
       data-search={searchQuery}
     >
       <img
+        ref={imgRef}
         src={profile.picture}
         alt={profile.fullname}
         className={`w-14 h-14 rounded-full object-cover p-0.5 ring-2 bg-white ${getRingColor(

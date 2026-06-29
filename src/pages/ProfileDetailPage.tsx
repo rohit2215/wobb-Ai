@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { VerifiedBadge } from "@/components/common/VerifiedBadge";
@@ -6,6 +6,7 @@ import type { FullUserProfile, ProfileDetailResponse } from "@/types";
 import { formatEngagementRate, formatFollowers } from "@/utils/formatters";
 import { loadProfileByUsername } from "@/utils/profileLoader";
 import { useInfluencerStore } from "@/store/useInfluencerStore";
+import { animateFlyToCart } from "@/utils/flyEffect";
 
 export function ProfileDetailPage() {
   const { username } = useParams<{ username: string }>();
@@ -16,6 +17,7 @@ export function ProfileDetailPage() {
   );
   const [loaded, setLoaded] = useState(false);
   const { selectedProfiles, addProfile, removeProfile } = useInfluencerStore();
+  const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     if (!username) return;
@@ -90,6 +92,10 @@ export function ProfileDetailPage() {
     if (isSelected) {
       removeProfile(user.user_id);
     } else {
+      // Trigger fly animation
+      if (imgRef.current) {
+        animateFlyToCart(imgRef.current, user.picture);
+      }
       addProfile({
         ...user,
         type: platform,
@@ -138,6 +144,7 @@ export function ProfileDetailPage() {
       {/* Main Profile Info Card Container */}
       <div className="p-6 sm:p-8 border border-slate-200 rounded-3xl bg-white shadow-[0_4px_24px_rgba(0,0,0,0.03)] max-w-2xl mx-auto flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left transition-all">
         <img
+          ref={imgRef}
           src={user.picture}
           alt={user.fullname}
           className={`w-24 h-24 rounded-full object-cover p-1 ring-4 bg-white ${getRingColor(

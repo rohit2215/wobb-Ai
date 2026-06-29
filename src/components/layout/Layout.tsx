@@ -54,6 +54,7 @@ export function Layout({ children, title }: LayoutProps) {
           </Link>
 
           <button
+            id="my-list-trigger"
             onClick={() => setIsDrawerOpen(true)}
             className="relative flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-700 transition-all font-semibold text-sm cursor-pointer shadow-sm bg-white"
           >
@@ -72,7 +73,7 @@ export function Layout({ children, title }: LayoutProps) {
             </svg>
             My List
             {selectedProfiles.length > 0 && (
-              <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-indigo-600 text-white font-bold text-xs rounded-full shadow-sm animate-pulse">
+              <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-indigo-600 text-white font-bold text-xs rounded-full shadow-sm">
                 {selectedProfiles.length}
               </span>
             )}
