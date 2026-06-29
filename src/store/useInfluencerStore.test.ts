@@ -8,6 +8,7 @@ const MOCK_PROFILE_1 = {
   picture: "http://image.url",
   followers: 120000000,
   is_verified: true,
+  url: "https://youtube.com/c/mrbeast",
 };
 
 const MOCK_PROFILE_2 = {
@@ -17,6 +18,7 @@ const MOCK_PROFILE_2 = {
   picture: "http://image.url2",
   followers: 160000000,
   is_verified: true,
+  url: "https://tiktok.com/@khaby.lame",
 };
 
 describe("useInfluencerStore", () => {
