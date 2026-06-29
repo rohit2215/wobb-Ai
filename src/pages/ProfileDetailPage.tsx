@@ -5,6 +5,7 @@ import { VerifiedBadge } from "@/components/common/VerifiedBadge";
 import type { FullUserProfile, ProfileDetailResponse } from "@/types";
 import { formatEngagementRate, formatFollowers } from "@/utils/formatters";
 import { loadProfileByUsername } from "@/utils/profileLoader";
+import { useInfluencerStore } from "@/store/useInfluencerStore";
 
 export function ProfileDetailPage() {
   const { username } = useParams<{ username: string }>();
@@ -14,6 +15,7 @@ export function ProfileDetailPage() {
     null
   );
   const [loaded, setLoaded] = useState(false);
+  const { selectedProfiles, addProfile, removeProfile } = useInfluencerStore();
 
   useEffect(() => {
     if (!username) return;
@@ -56,6 +58,15 @@ export function ProfileDetailPage() {
 
   const user: FullUserProfile = profileData.data.user_profile;
   const platform = user.type || platformParam;
+  const isSelected = selectedProfiles.some((p) => p.user_id === user.user_id);
+
+  const handleToggle = () => {
+    if (isSelected) {
+      removeProfile(user.user_id);
+    } else {
+      addProfile(user);
+    }
+  };
 
   return (
     <Layout title={user.fullname}>
@@ -148,12 +159,34 @@ export function ProfileDetailPage() {
             </a>
           )}
 
-          {/* TODO: candidates must implement Add to List feature */}
           <button
-            disabled
-            className="block mt-4 px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed"
+            onClick={handleToggle}
+            className={`block mt-5 px-5 py-2 text-sm font-semibold rounded-lg border transition-colors cursor-pointer flex items-center gap-1.5 ${
+              isSelected
+                ? "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
+                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+            }`}
           >
-            Add to List
+            {isSelected ? (
+              <>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                Added to List
+              </>
+            ) : (
+              "Add to List"
+            )}
           </button>
         </div>
       </div>
