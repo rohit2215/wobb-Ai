@@ -29,29 +29,55 @@ export function ProfileDetailPage() {
   if (!username) {
     return (
       <Layout>
-        <p>Invalid profile</p>
-        <Link to="/">Back</Link>
+        <p className="text-red-500 font-bold">Invalid profile path</p>
+        <Link to="/" className="text-blue-600 underline">
+          Back
+        </Link>
       </Layout>
     );
   }
 
   if (!loaded) {
     return (
-      <Layout title={`@${username}`}>
-        <p className="text-gray-400">Loading...</p>
+      <Layout>
+        <div className="flex flex-col items-center justify-center py-20 text-center text-slate-500">
+          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="font-semibold text-sm">Loading creator intelligence...</p>
+        </div>
       </Layout>
     );
   }
 
   if (!profileData) {
     return (
-      <Layout title={`@${username}`}>
-        <p className="text-red-600 mb-4">
-          Could not load profile details for {username}
-        </p>
-        <Link to="/" className="text-blue-600 underline">
-          Back to search
-        </Link>
+      <Layout>
+        <div className="max-w-md mx-auto text-center py-16 bg-white border border-slate-100 rounded-3xl shadow-sm px-6">
+          <svg
+            className="w-16 h-16 text-red-400 mx-auto mb-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+          <p className="text-slate-800 font-bold text-lg mb-2">
+            Could not load profile details
+          </p>
+          <p className="text-slate-500 text-sm mb-6">
+            We couldn't retrieve database results for "@{username}".
+          </p>
+          <Link
+            to="/"
+            className="inline-flex items-center px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors shadow-sm"
+          >
+            Back to Search
+          </Link>
+        </div>
       </Layout>
     );
   }
@@ -64,21 +90,59 @@ export function ProfileDetailPage() {
     if (isSelected) {
       removeProfile(user.user_id);
     } else {
-      addProfile(user);
+      addProfile({
+        ...user,
+        type: platform,
+      } as any);
+    }
+  };
+
+  const getRingColor = (p: string) => {
+    switch (p) {
+      case "instagram":
+        return "ring-pink-500/20";
+      case "youtube":
+        return "ring-red-500/20";
+      case "tiktok":
+        return "ring-slate-800/20";
+      default:
+        return "ring-indigo-500/20";
     }
   };
 
   return (
-    <Layout title={user.fullname}>
-      <Link to="/" className="text-sm text-blue-600 mb-4 inline-block">
-        ← Back to search
-      </Link>
+    <Layout>
+      {/* Dynamic Styled Back Button */}
+      <div className="text-left max-w-2xl mx-auto mb-6">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-full transition-all duration-200 shadow-sm cursor-pointer"
+        >
+          <svg
+            className="w-4 h-4 text-slate-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          Back to Search
+        </Link>
+      </div>
 
-      <div className="flex gap-6 items-start text-left max-w-2xl mx-auto">
+      {/* Main Profile Info Card Container */}
+      <div className="p-6 sm:p-8 border border-slate-200 rounded-3xl bg-white shadow-[0_4px_24px_rgba(0,0,0,0.03)] max-w-2xl mx-auto flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left transition-all">
         <img
           src={user.picture}
           alt={user.fullname}
-          className="w-24 h-24 rounded-full border object-cover"
+          className={`w-24 h-24 rounded-full object-cover p-1 ring-4 bg-white ${getRingColor(
+            platform
+          )}`}
           referrerPolicy="no-referrer"
           onError={(e) => {
             e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
@@ -86,108 +150,145 @@ export function ProfileDetailPage() {
             )}`;
           }}
         />
-        <div className="flex-1">
-          <h2 className="text-xl font-bold">
+
+        <div className="flex-1 min-w-0">
+          <h2 className="text-2xl font-extrabold text-slate-900 flex items-center justify-center sm:justify-start gap-1 truncate leading-tight">
             @{user.username}
             <VerifiedBadge verified={user.is_verified} />
           </h2>
-          <p className="text-gray-600">{user.fullname}</p>
-          <p className="text-xs text-gray-400 mt-1 capitalize">Platform: {platform}</p>
+          <p className="text-base font-semibold text-slate-500 mt-1">
+            {user.fullname}
+          </p>
+          
+          {/* Platform Tag */}
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-full font-bold text-[10px] mt-2 capitalize select-none">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+            {platform} Creator
+          </span>
 
           {user.description && (
-            <p className="mt-3 text-sm text-gray-700">{user.description}</p>
+            <p className="mt-4 text-sm text-slate-600 leading-relaxed font-medium">
+              {user.description}
+            </p>
           )}
 
-          <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-            <div className="border p-2 rounded">
-              <div className="text-gray-500">Followers</div>
-              <div className="font-semibold">
+          {/* Stats Display Panel Grid */}
+          <div className="mt-6 grid grid-cols-2 gap-3 text-sm">
+            <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl hover:bg-slate-100/50 transition-colors">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Followers
+              </div>
+              <div className="text-lg font-extrabold text-slate-900 mt-1">
                 {formatFollowers(user.followers, 2)}
               </div>
             </div>
-            <div className="border p-2 rounded">
-              <div className="text-gray-500">Engagement Rate</div>
-              <div className="font-semibold">
+
+            <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl hover:bg-slate-100/50 transition-colors">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Engagement Rate
+              </div>
+              <div className="text-lg font-extrabold text-slate-900 mt-1">
                 {formatEngagementRate(user.engagement_rate)}
               </div>
             </div>
+
             {user.posts_count !== undefined && (
-              <div className="border p-2 rounded">
-                <div className="text-gray-500">Posts</div>
-                <div className="font-semibold">{user.posts_count}</div>
+              <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl hover:bg-slate-100/50 transition-colors">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Posts
+                </div>
+                <div className="text-lg font-extrabold text-slate-900 mt-1">
+                  {user.posts_count}
+                </div>
               </div>
             )}
+
             {user.avg_likes !== undefined && (
-              <div className="border p-2 rounded">
-                <div className="text-gray-500">Avg Likes</div>
-                <div className="font-semibold">
+              <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl hover:bg-slate-100/50 transition-colors">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Avg Likes
+                </div>
+                <div className="text-lg font-extrabold text-slate-900 mt-1">
                   {formatFollowers(user.avg_likes, 2)}
                 </div>
               </div>
             )}
+
             {user.avg_comments !== undefined && (
-              <div className="border p-2 rounded">
-                <div className="text-gray-500">Avg Comments</div>
-                <div className="font-semibold">{formatFollowers(user.avg_comments)}</div>
+              <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl hover:bg-slate-100/50 transition-colors">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Avg Comments
+                </div>
+                <div className="text-lg font-extrabold text-slate-900 mt-1">
+                  {formatFollowers(user.avg_comments)}
+                </div>
               </div>
             )}
+
             {user.avg_views !== undefined && user.avg_views > 0 && (
-              <div className="border p-2 rounded">
-                <div className="text-gray-500">Avg Views</div>
-                <div className="font-semibold">
+              <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl hover:bg-slate-100/50 transition-colors">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Avg Views
+                </div>
+                <div className="text-lg font-extrabold text-slate-900 mt-1">
                   {formatFollowers(user.avg_views, 2)}
                 </div>
               </div>
             )}
+
             {user.engagements !== undefined && (
-              <div className="border p-2 rounded">
-                <div className="text-gray-500">Engagements</div>
-                <div className="font-semibold">
+              <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl hover:bg-slate-100/50 transition-colors col-span-2 sm:col-span-1">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Total Engagements
+                </div>
+                <div className="text-lg font-extrabold text-slate-900 mt-1">
                   {formatFollowers(user.engagements)}
                 </div>
               </div>
             )}
           </div>
 
-          {user.url && (
-            <a
-              href={user.url}
-              target="_blank"
-              className="inline-block mt-4 text-blue-600 text-sm"
-            >
-              View on platform →
-            </a>
-          )}
-
-          <button
-            onClick={handleToggle}
-            className={`block mt-5 px-5 py-2 text-sm font-semibold rounded-lg border transition-colors cursor-pointer flex items-center gap-1.5 ${
-              isSelected
-                ? "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
-            }`}
-          >
-            {isSelected ? (
-              <>
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={3}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                Added to List
-              </>
-            ) : (
-              "Add to List"
+          <div className="mt-6 flex flex-wrap gap-3 items-center justify-center sm:justify-start">
+            {user.url && (
+              <a
+                href={user.url}
+                target="_blank"
+                className="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-lg shadow-sm transition-colors cursor-pointer"
+              >
+                View on Platform →
+              </a>
             )}
-          </button>
+
+            <button
+              onClick={handleToggle}
+              className={`px-5 py-2 text-xs font-bold rounded-lg border transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                isSelected
+                  ? "bg-indigo-600 border-indigo-600 text-white shadow-sm hover:bg-indigo-700"
+                  : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+              }`}
+            >
+              {isSelected ? (
+                <>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Added to List
+                </>
+              ) : (
+                "Add to List"
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </Layout>
