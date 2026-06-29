@@ -29,7 +29,17 @@ export function ProfileCard({
       className="flex items-center gap-3 p-3 border border-gray-300 mb-2 cursor-pointer hover:bg-gray-50 w-full max-w-2xl"
       data-search={searchQuery}
     >
-      <img src={profile.picture} className="w-12 h-12 rounded-full" />
+      <img
+        src={profile.picture}
+        alt={profile.fullname}
+        className="w-12 h-12 rounded-full object-cover"
+        referrerPolicy="no-referrer"
+        onError={(e) => {
+          e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
+            profile.fullname || profile.username
+          )}`;
+        }}
+      />
       <div className="text-left flex-1">
         <div className="font-bold">
           @{profile.username}

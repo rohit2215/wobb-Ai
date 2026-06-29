@@ -66,7 +66,14 @@ export function ProfileDetailPage() {
       <div className="flex gap-6 items-start text-left max-w-2xl mx-auto">
         <img
           src={user.picture}
-          className="w-24 h-24 rounded-full border"
+          alt={user.fullname}
+          className="w-24 h-24 rounded-full border object-cover"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
+              user.fullname || user.username
+            )}`;
+          }}
         />
         <div className="flex-1">
           <h2 className="text-xl font-bold">

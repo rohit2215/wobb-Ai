@@ -1,23 +1,15 @@
-import { useState } from "react";
-import type { Platform } from "@/types";
+import { useInfluencerStore } from "@/store/useInfluencerStore";
 import { Layout } from "@/components/layout/Layout";
 import { PlatformFilter } from "@/components/influencer/PlatformFilter";
 import { ProfileList } from "@/components/influencer/ProfileList";
 import { extractProfiles, filterProfiles } from "@/utils/dataHelpers";
 
 export function SearchPage() {
-  const [platform, setPlatform] = useState<Platform>("instagram");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [clickCount, setClickCount] = useState(0);
+  const { platform, searchQuery, setPlatform, setSearchQuery } =
+    useInfluencerStore();
 
   const allProfiles = extractProfiles(platform);
   const filtered = filterProfiles(allProfiles, searchQuery);
-
-  const handleProfileClick = (username: string) => {
-    const nextClickCount = clickCount + 1;
-    setClickCount(nextClickCount);
-    console.log("Clicked profile:", username, "total clicks:", nextClickCount);
-  };
 
   return (
     <Layout title="Find Influencers">
@@ -43,7 +35,7 @@ export function SearchPage() {
         profiles={filtered}
         platform={platform}
         searchQuery={searchQuery}
-        onProfileClick={handleProfileClick}
+        onProfileClick={() => {}}
       />
     </Layout>
   );
